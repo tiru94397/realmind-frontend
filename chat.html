@@ -129,6 +129,8 @@ body{
 .small-toggle{display:flex;gap:6px;align-items:center;font-size:13px}
 .personality-select{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.32)}
 .mode-toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.9);cursor:pointer;}
+
+/* body container */
 .chat-body {
   flex: 1;
   padding: 18px;
@@ -138,7 +140,8 @@ body{
   gap: 16px;
   scroll-behavior: smooth;
 
-  background-image: url("24.png"); /* only here! */
+  /* FIXED SINGLE BACKGROUND IMAGE */
+  background-image: url("24.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -147,28 +150,70 @@ body{
   position: relative;
 }
 
+/* Blur overlay */
 .chat-body::before {
   content: "";
   position: absolute;
   inset: 0;
-
-  /* ONLY blur + tint */
   backdrop-filter: blur(18px) saturate(160%);
-  background: rgba(255,255,255,0.04);
-
+  background: rgba(255, 255, 255, 0.05);
   z-index: 0;
 }
 
+/* keep messages above blur */
 .chat-body > * {
   position: relative;
   z-index: 1;
 }
 
-.msg{max-width:78%;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.5;box-shadow:0 6px 18px rgba(2,6,23,0.14)}
-.msg.user{align-self:flex-end;background:var(--bubble-user);color:var(--text)}
-.msg.ai{align-self:flex-start;background:var(--bubble-ai);color:var(--text)}
+.msg{
+  max-width:78%;
+  padding:12px 14px;
+  border-radius:12px;
+  font-size:15px;
+  line-height:1.5;
+  box-shadow:0 6px 18px rgba(2,6,23,0.14);
+}
+.msg.user{
+  align-self:flex-end;
+  background:var(--bubble-user);
+  color:var(--text);
+}
+.msg.ai{
+  align-self:flex-start;
+  background:var(--bubble-ai);
+  color:var(--text);
+}
 
-/* image grid inside bubble */
+/* Perplexity-style image hero */
+.ai-image-hero{
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  margin-bottom:8px;
+  cursor:pointer;
+}
+.ai-image-hero img{
+  width:100%;
+  display:block;
+  max-height:320px;
+  object-fit:cover;
+  transition:transform 0.35s ease, box-shadow 0.35s ease;
+}
+.ai-image-hero:hover img{
+  transform:scale(1.03);
+  box-shadow:0 18px 45px rgba(15,23,42,0.55);
+}
+.ai-image-caption{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.ai-image-text{
+  margin-top:4px;
+}
+
+/* image grid inside bubble (if needed later) */
 .img-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
 .img-grid .img-card{position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:6px}
 .img-grid img{width:100%;height:160px;object-fit:cover;border-radius:8px}
@@ -213,7 +258,10 @@ body{
   display:flex;
   gap:8px;
   background:rgba(247,242,255,0.9);
-  padding:10px;border-radius:12px;border:1px solid rgba(224,212,255,0.4);flex:1;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid rgba(224,212,255,0.4);
+  flex:1;
   align-items:center;
 }
 .input-box.dark{background:rgba(255,255,255,0.04)}
@@ -224,25 +272,73 @@ body{
 .attach-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .attach-item{width:84px;height:56px;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;font-size:12px;background:rgba(255,255,255,0.6)}
 
-/* modal preview */
-.preview-modal{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:4000}
-.preview-modal .content{background:white;padding:12px;border-radius:12px;max-width:90%;max-height:90%;display:flex;flex-direction:column;gap:8px}
-.preview-modal img{max-width:100%;max-height:70vh;object-fit:contain;border-radius:8px}
+/* modal preview (image zoom) */
+.preview-modal{
+  position:fixed;
+  left:0;top:0;width:100%;height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.6);
+  z-index:4000;
+}
+.preview-modal .content{
+  background:transparent;
+  padding:12px;
+  border-radius:12px;
+  max-width:90%;
+  max-height:90%;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.preview-modal img{
+  max-width:100%;
+  max-height:80vh;
+  object-fit:contain;
+  border-radius:16px;
+  box-shadow:0 0 40px rgba(15,23,42,0.8);
+}
 
 /* small responsive */
 @media(max-width:920px){
-  body{padding:10px}.sidebar{display:none}.msg{max-width:92%}.sidebar{width:0}
+  body{padding:10px}
+  .sidebar{display:none}
+  .msg{max-width:92%}
+  .sidebar{width:0}
 }
 
 /* shimmer + typing */
-.ai-thinking{width:140px;height:14px;border-radius:8px;background:linear-gradient(90deg,#c7b5ff30,#ffffff70,#c7b5ff30);background-size:200% 100%;animation:shimmer 1.4s infinite}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.ai-thinking{
+  width:140px;
+  height:14px;
+  border-radius:8px;
+  background:linear-gradient(90deg,#c7b5ff30,#ffffff70,#c7b5ff30);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+}
+@keyframes shimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
 
-/* sentence + wave (kept from original) */
-.sentence{opacity:0;transition: opacity 0.35s ease;display:block;margin-bottom:8px}
+/* sentence + wave (Perplexity-style) */
+.sentence{
+  opacity:0;
+  transition: opacity 0.35s ease;
+  display:block;
+  margin-bottom:8px;
+}
 .word{display:inline-block;margin-right:6px;white-space:nowrap}
-.letter{opacity:0;display:inline-block;transform:translateY(6px);animation:wave 0.28s forwards ease}
-@keyframes wave{to{opacity:1;transform:none}}
+.letter{
+  opacity:0;
+  display:inline-block;
+  transform:translateY(6px);
+  animation:wave 0.28s forwards ease;
+}
+@keyframes wave{
+  to{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
@@ -343,6 +439,7 @@ body{
 
 <script>
 // --- CONFIG ---
+// 24.png should be next to this HTML file
 const uploadedAssetPath = '24.png';
 
 // ----------------------
@@ -364,7 +461,7 @@ let attachedFiles = [];
 let isUrlMode = false;
 let isImageMode = false;
 
-// Set background safely
+// Set background safely (also CSS)
 document.addEventListener("DOMContentLoaded", () => {
   chatBody.style.backgroundImage = `url('${uploadedAssetPath}')`;
 });
@@ -425,6 +522,27 @@ function addMessage({ role = 'ai', html = '', text = '' }) {
   return div;
 }
 
+// Image preview (zoom on click)
+function openImagePreview(src) {
+  previewModal.innerHTML = `
+    <div class="preview-modal" onclick="closeImagePreview(event)">
+      <div class="content">
+        <img src="${src}" alt="Preview">
+      </div>
+    </div>
+  `;
+  previewModal.style.display = 'flex';
+}
+
+function closeImagePreview(e) {
+  // close when clicking outside image (on overlay)
+  if (e.target.classList.contains('preview-modal')) {
+    previewModal.style.display = 'none';
+    previewModal.innerHTML = '';
+  }
+}
+window.closeImagePreview = closeImagePreview; // make global for inline handler
+
 // ----------------------
 // File handling
 // ----------------------
@@ -464,7 +582,7 @@ document.addEventListener("drop", e => {
 });
 
 // ----------------------
-// Image Mode Toggle
+// Image Mode Toggle (global like Perplexity)
 // ----------------------
 imageModeToggle.addEventListener("click", () => {
   isImageMode = !isImageMode;
@@ -472,6 +590,7 @@ imageModeToggle.addEventListener("click", () => {
     ? "linear-gradient(90deg,var(--grad1),var(--grad2))"
     : "";
   imageModeToggle.style.color = isImageMode ? "#fff" : "";
+  imageModeToggle.textContent = isImageMode ? "🖼️ Image: ON" : "🖼️ Image Mode";
 });
 
 // ----------------------
@@ -495,6 +614,56 @@ function escapeHtml(s) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;",
     '"': "&quot;", "'": "&#39;"
   }[ch]));
+}
+
+// ----------------------
+// Perplexity-style text animation into a target element
+// ----------------------
+function animateTextInto(text, targetEl) {
+  const cleaned = (text || "").trim();
+  if (!cleaned) return;
+
+  const sentences = cleaned.split(/(?<=[.!?])\s+/);
+  let delay = 0;
+
+  sentences.forEach(sentence => {
+    if (!sentence.trim()) return;
+
+    const sentenceEl = document.createElement("div");
+    sentenceEl.className = "sentence";
+
+    const words = sentence.split(" ");
+    words.forEach(word => {
+      const wordEl = document.createElement("span");
+      wordEl.className = "word";
+
+      [...word].forEach((letter, i) => {
+        const letterEl = document.createElement("span");
+        letterEl.className = "letter";
+        letterEl.textContent = letter;
+        letterEl.style.animationDelay = (i * 0.02) + "s";
+        wordEl.appendChild(letterEl);
+      });
+
+      sentenceEl.appendChild(wordEl);
+    });
+
+    targetEl.appendChild(sentenceEl);
+
+    setTimeout(() => {
+      sentenceEl.style.opacity = 1;
+      scrollToBottom();
+    }, delay);
+
+    delay += 350;
+  });
+}
+
+// Wrapper for normal AI reply in its own bubble
+function animateAIResponse(text) {
+  const container = addMessage({ role: "ai", html: "" });
+  animateTextInto(text, container);
+  return container;
 }
 
 // ----------------------
@@ -535,39 +704,75 @@ async function submitInput() {
     txt = stripFormatting(cleanAIText(txt));
 
     shimmer.remove();
-   animateAIResponse(txt);
 
+    // detect if this should generate an image (Perplexity-style global image mode)
+    const visualRegex = /(image|show|draw|visualize|generate|picture|design|look like|logo|ui|mockup|poster|scene)/i;
+    const shouldGenerateImage = isImageMode || visualRegex.test(raw);
+
+    if (shouldGenerateImage) {
+      const imgUrl = await generateFreeImage(raw);
+
+      if (imgUrl) {
+        // One AI bubble: image hero at top + animated text below it
+        const bubble = addMessage({ role: "ai", html: "" });
+
+        const hero = document.createElement("div");
+        hero.className = "ai-image-hero";
+        const img = document.createElement("img");
+        img.src = imgUrl;
+        img.alt = "AI generated visual";
+        hero.appendChild(img);
+        bubble.appendChild(hero);
+
+        const caption = document.createElement("div");
+        caption.className = "ai-image-caption";
+        caption.textContent = "Tap to zoom • Generated by RealMind Image Mode";
+        bubble.appendChild(caption);
+
+        img.addEventListener("click", () => openImagePreview(imgUrl));
+
+        const textWrap = document.createElement("div");
+        textWrap.className = "ai-image-text";
+        bubble.appendChild(textWrap);
+
+        animateTextInto(txt, textWrap);
+      } else {
+        // fallback: normal animated response + note
+        animateAIResponse(txt + "\n\n(⚠️ Image generation failed.)");
+      }
+    } else {
+      // normal text-only response with animation
+      animateAIResponse(txt);
+    }
 
   } catch (err) {
+    console.error(err);
     shimmer.remove();
     addMessage({ role: "ai", text: "Error contacting backend." });
   }
 }
+
+// Optional: simple typewriter (unused now but kept if you want later)
 function streamAIResponse(text) {
   const container = addMessage({ role: "ai", html: "" });
 
   let i = 0;
-
   function typeNext() {
     if (i < text.length) {
       container.innerHTML += text[i] === "\n" ? "<br>" : text[i];
       i++;
       scrollToBottom();
-
-      // Typing speed — tune if needed
-      setTimeout(typeNext, 12); 
+      setTimeout(typeNext, 12);
     }
   }
-
   typeNext();
 }
-
 
 // ----------------------
 // Demo
 // ----------------------
 function playDemo() {
-  submitSample("Mark Zuckerberg is the founder and CEO of Meta. He began Facebook in 2004...");
+  submitSample("Show an image of a futuristic factory control room dashboard UI and explain how it works.");
 }
 
 function playDemo2() {
@@ -579,50 +784,25 @@ function submitSample(t) {
   submitInput();
 }
 
-function animateAIResponse(text) {
-  const container = addMessage({ role: "ai", html: "" });
+/* -----------------------
+   Pollinations Image API
+------------------------*/
+async function generateFreeImage(prompt) {
+  try {
+    const encoded = encodeURIComponent(prompt);
+    const url = `https://image.pollinations.ai/prompt/${encoded}`;
 
-  const sentences = text.split(/(?<=[.!?])\s+/);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("Pollinations responded with error");
 
-  let delay = 0;
-
-  sentences.forEach(sentence => {
-    const sentenceEl = document.createElement("div");
-    sentenceEl.className = "sentence";
-
-    // break into words → letters
-    const words = sentence.split(" ");
-    words.forEach(word => {
-      const wordEl = document.createElement("span");
-      wordEl.className = "word";
-
-      [...word].forEach((letter, i) => {
-        const letterEl = document.createElement("span");
-        letterEl.className = "letter";
-        letterEl.textContent = letter;
-        letterEl.style.animationDelay = (i * 0.02) + "s";
-        wordEl.appendChild(letterEl);
-      });
-
-      sentenceEl.appendChild(wordEl);
-    });
-
-    container.appendChild(sentenceEl);
-
-    // fade-in sentence
-    setTimeout(() => {
-      sentenceEl.style.opacity = 1;
-      scrollToBottom();
-    }, delay);
-
-    delay += 350; // sentence-to-sentence pacing
-  });
-
-  return container;
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  } catch (err) {
+    console.error("Image generation failed:", err);
+    return null;
+  }
 }
-
 </script>
 
 </body>
 </html>
-
