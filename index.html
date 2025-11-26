@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RealMind – About</title>
+  <link rel="stylesheet" href="style/global.css">
+  
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<!-- Your Firebase Config -->
+  <script>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDQXE5ICednf0AHESEViOuzdvwNS5oS-rk",
+  authDomain: "realmind-1.firebaseapp.com",
+  projectId: "realmind-1",
+  storageBucket: "realmind-1.firebasestorage.app",
+  messagingSenderId: "424947466240",
+  appId: "1:424947466240:web:148379b2568d923f2498e5",
+  measurementId: "G-4RDPDTDJYP"
+};
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="nav-left">
+    <div class="logo">RealMind</div>
+    <a href="login.html">Login</a>
+    <a href="signup.html">Sign Up</a>
+  </div>
+</div>
+
+<div class="page">
+  <h1>Welcome to RealMind</h1>
+  <p>
+    RealMind is a next-generation AI assistant designed with premium UI, animated chat,
+    memory engine, and powerful tools to help you think, build, and grow — beautifully.
+  </p>
+
+  <h2>Why RealMind?</h2>
+  <ul>
+    <li>⚡ Clean, modern, stylish UI</li>
+    <li>🤖 AI Chat with animation</li>
+    <li>🧠 Memory saving</li>
+    <li>🖼️ Image generation mode</li>
+    <li>🔐 Secure login system</li>
+  </ul>
+
+  <h2>Start using RealMind</h2>
+  <a href="login.html" class="start-btn">Login Now</a>
+</div>
+
+<style>
+.start-btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: linear-gradient(90deg,#6bb5e9,#ebc2f0);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+}
+</style>
+
+</body>
+</html>

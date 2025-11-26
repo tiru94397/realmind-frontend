@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RealMind — Auto-Animated Chat (Upgraded)</title>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+<!-- Your Firebase Config -->
+<script>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDQXE5ICednf0AHESEViOuzdvwNS5oS-rk",
+  authDomain: "realmind-1.firebaseapp.com",
+  projectId: "realmind-1",
+  storageBucket: "realmind-1.firebasestorage.app",
+  messagingSenderId: "424947466240",
+  appId: "1:424947466240:web:148379b2568d923f2498e5",
+  measurementId: "G-4RDPDTDJYP"
+};
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script>
+<script src="js/auth.js"></script>
+<script>protectPage();</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --grad1:#6bb5e9; --grad2:#ebc2f0;
+  --sidebar-bg:rgba(255,255,255,0.24);
+  --bubble-user:#E7DFFF; --bubble-ai:rgba(255,255,255,0.9);
+  --text:#0b0b0b;
+  --glass-bg: rgba(255,255,255,0.14);
+  --muted: rgba(0,0,0,0.5);
+}
+/* Dark theme variables */
+:root.dark{
+  --sidebar-bg: rgba(8,10,12,0.36);
+  --bubble-user:#3a2b63;
+  --bubble-ai: rgba(22,24,28,0.9);
+  --text: #e6e6e6;
+  --glass-bg: rgba(255,255,255,0.02);
+  --muted: rgba(255,255,255,0.6);
+}
+
+*{box-sizing:border-box;font-family:Inter,system-ui,Arial;margin:0;padding:0}
+html,body{height:100%}
+body{
+  height:100vh;
+  display:flex;
+  gap:18px;
+  padding:18px;
+  background: linear-gradient(135deg, rgba(140,108,255,0.08), rgba(201,178,255,0.04));
+  color:var(--text);
+  transition: background 300ms ease, color 200ms ease;
+}
+
+/* sidebar (glass) */
+.sidebar{
+  width: 310px;
+  background:var(--sidebar-bg);
+  backdrop-filter: blur(20px) saturate(160%);
+  border-radius:22px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+.logo{
+  font-weight:900;
+  font-size:22px;
+  letter-spacing:-0.5px;
+  background:linear-gradient(90deg,var(--grad1),var(--grad2));
+  -webkit-background-clip:text;
+  color:transparent;
+  text-shadow:0 0 22px rgba(172,140,255,0.28);
+}
+.small{font-size:13px;color:var(--muted)}
+.new-chat{background:linear-gradient(90deg,var(--grad1),var(--grad2));color:white;padding:10px;border-radius:12px;text-align:center;cursor:pointer;font-weight:700}
+.examples{display:flex;flex-direction:column;gap:8px}
+.examples button{padding:8px;border-radius:10px;border:none;background:rgba(255,255,255,0.9);cursor:pointer}
+
+/* main chat window (glass) */
+.chat-window{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  border-radius:22px;
+  overflow:hidden;
+  background:var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 40px rgba(2,6,23,0.12);
+}
+
+/* header */
+.chat-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 18px;
+  background: transparent;
+  border-bottom:1px solid rgba(0,0,0,0.02);
+}
+.header-left{display:flex;gap:12px;align-items:center}
+.header-title{font-weight:700}
+.controls{display:flex;gap:8px;align-items:center}
+
+/* model select + memory + theme toggle + personality */
+.model-select{
+  background:rgba(255,255,255,0.32);
+  backdrop-filter: blur(8px);
+  border:1px solid rgba(0,0,0,0.06);
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:13px;
+  cursor:pointer;
+}
+.small-toggle{display:flex;gap:6px;align-items:center;font-size:13px}
+.personality-select{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.32)}
+.mode-toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.9);cursor:pointer;}
+
+/* body */
+.chat-body{
+  flex:1;
+  padding:18px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  scroll-behavior:smooth;
+  background: url("24.png");
+  /* background-image set dynamically via JS (uploaded asset path) */
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  backdrop-filter:blur(10px) brightness(1.1);
+
+  position:relative;
+}
+.chat-body::before{
+  content:"";
+  background-position:sticky;
+  background-repeat:no-repeat;
+  position:absolute;
+  background-position: cover;
+  inset:0;
+  backdrop-filter:blur(18px) saturate(160%);
+  background: url("24.png");
+  z-index:0;
+}
+.chat-body > *{
+  position:relative;
+  z-index:1;
+}
+
+.msg{max-width:78%;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.5;box-shadow:0 6px 18px rgba(2,6,23,0.14)}
+.msg.user{align-self:flex-end;background:var(--bubble-user);color:var(--text)}
+.msg.ai{align-self:flex-start;background:var(--bubble-ai);color:var(--text)}
+
+/* image grid inside bubble */
+.img-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+.img-grid .img-card{position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:6px}
+.img-grid img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+.img-card .img-actions{display:flex;gap:6px;margin-top:6px}
+.img-actions button{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.95);cursor:pointer;font-size:13px}
+
+/* code block handling */
+.code-wrap{position:relative;border-radius:10px;overflow:hidden;margin-top:8px}
+.copy-btn{
+  position:absolute;right:8px;top:8px;background:rgba(0,0,0,0.06);border:none;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:13px
+}
+
+/* suggested chips */
+.suggestions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.suggestion{background:rgba(0,0,0,0.06);padding:8px 10px;border-radius:999px;cursor:pointer;font-size:13px}
+
+/* dock (iPhone style) */
+.dock{
+  position:sticky;
+  bottom:12px;
+  margin:12px;
+  display:flex;
+  justify-content:center;
+}
+.dock-inner{
+  background:rgba(255,255,255,0.22);
+  backdrop-filter: blur(18px);
+  border-radius:999px;
+  padding:10px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow:0 10px 30px rgba(0,0,0,0.12);
+}
+.dock button{border:none;background:transparent;padding:8px;border-radius:10px;cursor:pointer;font-size:18px}
+
+/* input box */
+.chat-input{padding:12px;border-top:1px solid rgba(0,0,0,0.02);background:transparent}
+.input-row{display:flex;gap:8px;align-items:center}
+.input-box{
+  display:flex;
+  gap:8px;
+  background:rgba(247,242,255,0.9);
+  padding:10px;border-radius:12px;border:1px solid rgba(224,212,255,0.4);flex:1;
+  align-items:center;
+}
+.input-box.dark{background:rgba(255,255,255,0.04)}
+.input-box input{flex:1;border:none;background:transparent;outline:none;padding:8px;font-size:15px}
+.send-btn{background:linear-gradient(90deg,var(--grad1),var(--grad2));border:none;color:white;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+
+/* attachments preview */
+.attach-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.attach-item{width:84px;height:56px;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;font-size:12px;background:rgba(255,255,255,0.6)}
+
+/* modal preview */
+.preview-modal{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:4000}
+.preview-modal .content{background:white;padding:12px;border-radius:12px;max-width:90%;max-height:90%;display:flex;flex-direction:column;gap:8px}
+.preview-modal img{max-width:100%;max-height:70vh;object-fit:contain;border-radius:8px}
+
+/* small responsive */
+@media(max-width:920px){
+  body{padding:10px}.sidebar{display:none}.msg{max-width:92%}.sidebar{width:0}
+}
+
+/* shimmer + typing */
+.ai-thinking{width:140px;height:14px;border-radius:8px;background:linear-gradient(90deg,#c7b5ff30,#ffffff70,#c7b5ff30);background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* sentence + wave (kept from original) */
+.sentence{opacity:0;transition: opacity 0.35s ease;display:block;margin-bottom:8px}
+.word{display:inline-block;margin-right:6px;white-space:nowrap}
+.letter{opacity:0;display:inline-block;transform:translateY(6px);animation:wave 0.28s forwards ease}
+@keyframes wave{to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" aria-hidden="false">
+  <div class="logo">RealMind</div>
+
+  <div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">Conversations</div>
+      <div class="small">Local</div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="new-chat" onclick="startNewChat()">+ New Chat</button>
+      <button onclick="exportChat('md')" style="padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer">Export</button>
+    </div>
+  </div>
+
+  <div style="margin-top:6px">
+    <div class="small">Memory</div>
+    <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+      <label class="small-toggle"><input id="memoryToggle" type="checkbox"/> Remember me</label>
+      <input id="saveName" placeholder="Name (optional)" style="padding:8px;border-radius:8px;margin-right:10px;border:1px solid rgba(0,0,0,0.06)" />
+    </div>
+  </div>
+
+  <div style="margin-top:6px">
+    <div class="small">Examples</div>
+    <div class="examples" style="margin-top:8px">
+      <button onclick="playDemo()">Zuckerberg</button>
+      <button onclick="playDemo2()">Explain JEE physics</button>
+    </div>
+  </div>
+
+  <div style="margin-top:auto">
+    <div class="small" style="margin-bottom:8px">Tips</div>
+    <div style="font-size:13px;color:var(--muted)">Use mic, attach files, paste URLs. Try "Summarize this site" after URL mode.</div>
+  </div>
+</div>
+
+<!-- Chat window -->
+<div class="chat-window" role="application" aria-live="polite">
+  <div class="chat-header">
+    <div class="header-left">
+      <div class="header-title">Chat with RealMind</div>
+      <div style="margin-left:6px;font-size:13px;color:var(--muted)">VF-AI • auto-animate</div>
+    </div>
+
+    <div class="controls">
+      <select id="modelSelect" class="model-select" title="Choose model">
+        <option value="mini">RealMind Mini</option>
+        <option value="pro" selected>RealMind Pro</option>
+        <option value="ultra">RealMind Ultra</option>
+      </select>
+
+      <select id="personality" class="personality-select" title="Personality">
+        <option value="friendly" selected>✨ Friendly</option>
+        <option value="fast">⚡ Fast</option>
+        <option value="precise">🎯 Precise</option>
+        <option value="professor">📚 Professor</option>
+        <option value="developer">🤖 Developer</option>
+      </select>
+
+      <!-- Image Mode Toggle -->
+      <button id="imageModeToggle" class="mode-toggle" title="Toggle Image Mode">🖼️ Image Mode</button>
+
+      <label title="Day/Night Theme" style="display:flex;align-items:center;gap:6px">
+        <input id="themeToggle" type="checkbox"/> Dark
+      </label>
+    </div>
+  </div>
+
+  <div class="chat-body" id="chatBody" role="region" aria-label="Chat messages">
+    <div class="msg ai" data-role="ai">
+      Welcome to RealMind! Try typing, pasting a URL, or using the mic. 🎧
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <form id="mainForm" class="input-row" onsubmit="event.preventDefault(); submitInput()">
+      <div id="inputBox" class="input-box" role="group" aria-label="Message input">
+        <button type="button" id="micBtn" class="mic-btn" title="Record quick">🎤</button>
+        <input id="userInput" placeholder="Ask, paste a URL or attach files..." autocomplete="off" />
+        <input id="fileInput" type="file" style="display:none" multiple />
+        <button id="attachBtn" type="button" title="Attach">📎</button>
+        <button id="cameraBtn" type="button" title="Open camera">📷</button>
+        <button id="sendBtn" class="send-btn" type="submit">Send</button>
+      </div>
+    </form>
+
+    <div class="attach-preview" id="attachPreview"></div>
+  </div>
+</div>
+
+<!-- Preview modal placeholder -->
+<div id="previewModal" style="display:none"></div>
+
+<script>
+// --- CONFIG ---
+const uploadedAssetPath = '/mnt/data/24.png';
+
+// ----------------------
+// Element refs
+// ----------------------
+const chatBody = document.getElementById('chatBody');
+const userInput = document.getElementById('userInput');
+const fileInput = document.getElementById('fileInput');
+const attachPreview = document.getElementById('attachPreview');
+const memoryToggle = document.getElementById('memoryToggle');
+const saveName = document.getElementById('saveName');
+const themeToggle = document.getElementById('themeToggle');
+const modelSelect = document.getElementById('modelSelect');
+const personality = document.getElementById('personality');
+const imageModeToggle = document.getElementById('imageModeToggle');
+const previewModal = document.getElementById('previewModal');
+
+let attachedFiles = [];
+let isUrlMode = false;
+let isImageMode = false;
+
+// Set background safely
+document.addEventListener("DOMContentLoaded", () => {
+  chatBody.style.backgroundImage = `url('${uploadedAssetPath}')`;
+});
+
+// ----------------------
+// Memory
+// ----------------------
+function loadMemory() {
+  try {
+    const raw = localStorage.getItem('realmind_memory_v1');
+    if (!raw) return;
+
+    const obj = JSON.parse(raw);
+    memoryToggle.checked = !!obj.enabled;
+    if (obj.name) saveName.value = obj.name;
+  } catch {}
+}
+loadMemory();
+
+function saveMemory() {
+  const data = {
+    enabled: memoryToggle.checked,
+    name: saveName.value || ""
+  };
+  localStorage.setItem('realmind_memory_v1', JSON.stringify(data));
+}
+memoryToggle.addEventListener('change', saveMemory);
+saveName.addEventListener('input', saveMemory);
+
+// ----------------------
+// Theme
+// ----------------------
+function applyTheme(dark) {
+  document.documentElement.classList.toggle("dark", dark);
+}
+themeToggle.addEventListener("change", () => applyTheme(themeToggle.checked));
+
+if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+  themeToggle.checked = true;
+}
+applyTheme(themeToggle.checked);
+
+// ----------------------
+// Helpers
+// ----------------------
+function scrollToBottom() {
+  chatBody.scrollTo({ top: chatBody.scrollHeight + 200, behavior: "smooth" });
+}
+
+function addMessage({ role = 'ai', html = '', text = '' }) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  if (html) div.innerHTML = html;
+  else div.textContent = text;
+
+  chatBody.appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+// ----------------------
+// File handling
+// ----------------------
+function handleFiles(files) {
+  [...files].forEach(f => {
+    attachedFiles.push(f);
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const box = document.createElement("div");
+      box.className = "attach-item";
+
+      if (f.type.startsWith("image/")) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.maxWidth = "100%";
+        box.appendChild(img);
+      } else {
+        box.textContent = f.name;
+      }
+      attachPreview.appendChild(box);
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+document.getElementById("attachBtn").addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => handleFiles(e.target.files));
+
+// Drag/drop
+["dragenter", "dragover"].forEach(ev => {
+  document.addEventListener(ev, e => e.preventDefault());
+});
+document.addEventListener("drop", e => {
+  e.preventDefault();
+  if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
+
+// ----------------------
+// Image Mode Toggle
+// ----------------------
+imageModeToggle.addEventListener("click", () => {
+  isImageMode = !isImageMode;
+  imageModeToggle.style.background = isImageMode
+    ? "linear-gradient(90deg,var(--grad1),var(--grad2))"
+    : "";
+  imageModeToggle.style.color = isImageMode ? "#fff" : "";
+});
+
+// ----------------------
+// Text cleaning
+// ----------------------
+function cleanAIText(t) {
+  if (!t) return "";
+  return t.replace(/\[\d+\]/g, "").trim();
+}
+
+function stripFormatting(text) {
+  if (!text) return "";
+  return text
+    .replace(/```([\s\S]*?)```/g, "$1")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .trim();
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  }[ch]));
+}
+
+// ----------------------
+// Submit input
+// ----------------------
+async function submitInput() {
+  const raw = userInput.value.trim();
+  if (!raw && attachedFiles.length === 0) return;
+
+  addMessage({ role: 'user', text: raw });
+  userInput.value = "";
+
+  let attachmentsMeta = [];
+  for (const f of attachedFiles) {
+    attachmentsMeta.push({ name: f.name, type: f.type });
+  }
+  attachedFiles = [];
+  attachPreview.innerHTML = "";
+
+  const shimmer = addMessage({ role: 'ai', html: '<div class="ai-thinking"></div>' });
+
+  try {
+    const payload = {
+      prompt: raw,
+      model: modelSelect.value,
+      personality: personality.value,
+      memory: memoryToggle.checked ? { name: saveName.value } : null,
+      attachments: attachmentsMeta
+    };
+
+    const res = await fetch("https://backend1-4-kx23.onrender.com/api/perplexity/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    let txt = await res.text();
+    txt = stripFormatting(cleanAIText(txt));
+
+    shimmer.remove();
+   animateAIResponse(txt);
+
+
+  } catch (err) {
+    shimmer.remove();
+    addMessage({ role: "ai", text: "Error contacting backend." });
+  }
+}
+function streamAIResponse(text) {
+  const container = addMessage({ role: "ai", html: "" });
+
+  let i = 0;
+
+  function typeNext() {
+    if (i < text.length) {
+      container.innerHTML += text[i] === "\n" ? "<br>" : text[i];
+      i++;
+      scrollToBottom();
+
+      // Typing speed — tune if needed
+      setTimeout(typeNext, 12); 
+    }
+  }
+
+  typeNext();
+}
+
+
+// ----------------------
+// Demo
+// ----------------------
+function playDemo() {
+  submitSample("Mark Zuckerberg is the founder and CEO of Meta. He began Facebook in 2004...");
+}
+
+function playDemo2() {
+  submitSample("Newton's laws: Provide a simple explanation and quick example problems for JEE-level physics.");
+}
+
+function submitSample(t) {
+  userInput.value = t;
+  submitInput();
+}
+
+function animateAIResponse(text) {
+  const container = addMessage({ role: "ai", html: "" });
+
+  const sentences = text.split(/(?<=[.!?])\s+/);
+
+  let delay = 0;
+
+  sentences.forEach(sentence => {
+    const sentenceEl = document.createElement("div");
+    sentenceEl.className = "sentence";
+
+    // break into words → letters
+    const words = sentence.split(" ");
+    words.forEach(word => {
+      const wordEl = document.createElement("span");
+      wordEl.className = "word";
+
+      [...word].forEach((letter, i) => {
+        const letterEl = document.createElement("span");
+        letterEl.className = "letter";
+        letterEl.textContent = letter;
+        letterEl.style.animationDelay = (i * 0.02) + "s";
+        wordEl.appendChild(letterEl);
+      });
+
+      sentenceEl.appendChild(wordEl);
+    });
+
+    container.appendChild(sentenceEl);
+
+    // fade-in sentence
+    setTimeout(() => {
+      sentenceEl.style.opacity = 1;
+      scrollToBottom();
+    }, delay);
+
+    delay += 350; // sentence-to-sentence pacing
+  });
+
+  return container;
+}
+
+</script>
+
+</body>
+</html>

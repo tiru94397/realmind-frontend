@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="goPremium()" class="premium-btn">
+  ⭐ Upgrade to Premium
+</button>
+
+<script>
+async function goPremium() {
+  const user = firebase.auth().currentUser;
+  if (!user) return window.location.href = "login.html";
+
+  const token = await user.getIdToken();
+
+  const res = await fetch("https://your-backend.com/create-checkout", {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ plan: "premium" })
+  });
+
+  const data = await res.json();
+  window.location.href = data.url;  // Redirect to Stripe Checkout
+}
+</script>
+
+</body>
+</html>

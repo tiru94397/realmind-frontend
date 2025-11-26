@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RealMind – Sign Up</title>
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/auth.css">
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <!-- FIREBASE CONFIG -->
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQXE5ICednf0AHESEViOuzdvwNS5oS-rk",
+    authDomain: "realmind-1.firebaseapp.com",
+    projectId: "realmind-1",
+    storageBucket: "realmind-1.appspot.com",
+    messagingSenderId: "424947466240",
+    appId: "1:424947466240:web:148379b2568d923f2498e5",
+    measurementId: "G-4RDPDTDJYP"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  </script>
+
+  <!-- AUTH SYSTEM -->
+  <script src="js/auth.js"></script>
+  <script> redirectIfLoggedIn(); </script>
+
+</head>
+<body>
+
+<div class="navbar">
+  <div class="nav-left">
+    <div class="logo">RealMind</div>
+    <a href="index.html">About</a>
+    <a href="login.html">Login</a>
+  </div>
+</div>
+
+<div class="auth-container">
+  <h2>Create Account</h2>
+  <p>Sign up to get started</p>
+
+  <input id="name" type="text" class="auth-input" placeholder="Full Name">
+  <input id="email" type="email" class="auth-input" placeholder="Email">
+  <input id="password" type="password" class="auth-input" placeholder="Password">
+
+  <button class="auth-btn" onclick="doSignup()">Create Account</button>
+
+  <p class="switch">Already have an account? <a href="login.html">Login</a></p>
+
+  <button class="auth-btn" style="background:white;color:#333" onclick="signInWithGoogle()">
+    Sign up with Google
+  </button>
+</div>
+
+<script>
+function doSignup() {
+  signupWithEmail(
+    document.getElementById("name").value,
+    document.getElementById("email").value,
+    document.getElementById("password").value
+  );
+}
+</script>
+
+</body>
+</html>
