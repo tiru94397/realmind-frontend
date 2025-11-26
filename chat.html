@@ -129,39 +129,39 @@ body{
 .small-toggle{display:flex;gap:6px;align-items:center;font-size:13px}
 .personality-select{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.32)}
 .mode-toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.9);cursor:pointer;}
+.chat-body {
+  flex: 1;
+  padding: 18px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
 
-/* body */
-.chat-body{
-  flex:1;
-  padding:18px;
-  overflow:auto;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  scroll-behavior:smooth;
-  background: url("24.png");
-  /* background-image set dynamically via JS (uploaded asset path) */
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  backdrop-filter:blur(10px) brightness(1.1);
+  background-image: url("24.png"); /* only here! */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 
-  position:relative;
+  position: relative;
 }
-.chat-body::before{
-  content:"";
-  background-position:sticky;
-  background-repeat:no-repeat;
-  position:absolute;
-  background-position: cover;
-  inset:0;
-  backdrop-filter:blur(18px) saturate(160%);
-  background: url("24.png");
-  z-index:0;
+
+.chat-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  /* ONLY blur + tint */
+  backdrop-filter: blur(18px) saturate(160%);
+  background: rgba(255,255,255,0.04);
+
+  z-index: 0;
 }
-.chat-body > *{
-  position:relative;
-  z-index:1;
+
+.chat-body > * {
+  position: relative;
+  z-index: 1;
 }
 
 .msg{max-width:78%;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.5;box-shadow:0 6px 18px rgba(2,6,23,0.14)}
@@ -343,7 +343,7 @@ body{
 
 <script>
 // --- CONFIG ---
-const uploadedAssetPath = '/mnt/data/24.png';
+const uploadedAssetPath = '24.png';
 
 // ----------------------
 // Element refs
@@ -625,3 +625,4 @@ function animateAIResponse(text) {
 
 </body>
 </html>
+
