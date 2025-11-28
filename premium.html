@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealMind Premium</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f9fc;
+        }
+
+        h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #6bb5e9, #3a80d4);
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        a.button-start {
+            padding: 12px 25px;
+            background: white;
+            color: #3a80d4;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        a.button-start:hover {
+            background: #e1efff;
+        }
+
+        /* Pricing Section */
+        .pricing-container {
+            margin: 50px auto;
+            max-width: 1200px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .plan-box {
+            background: white;
+            width: 330px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .plan-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.18);
+        }
+
+        .plan-title {
+            font-size: 27px;
+            font-weight: bold;
+            color: #3a80d4;
+            text-align: center;
+        }
+
+        .price {
+            text-align: center;
+            font-size: 40px;
+            margin: 15px 0;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .features p {
+            padding: 6px 0;
+            font-size: 15px;
+            color: #444;
+        }
+
+        .btn-buy {
+            width: 100%;
+            text-align: center;
+            margin-top: 25px;
+            background: #6bb5e9;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-buy:hover {
+            background: #3a80d4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🎉 You are now Premium!</h1>
+        <p>Your account has been upgraded.</p>
+
+        <a href="chat.html" class="button-start">Start Chatting</a>
+
+        <h2 style="margin-top:40px;">Upgrade to RealMind Pro?</h2>
+    </div>
+
+    <!-- PRICING PLANS -->
+    <div class="pricing-container">
+
+        <!-- FREE PLAN -->
+        <div class="plan-box">
+            <div class="plan-title">RM FREE</div>
+            <div class="price">$0</div>
+
+            <div class="features">
+                <p>✔ Limited GPT Models</p>
+                <p>✔ Limited Text Generation</p>
+                <p>✔ Limited 3D Model Generation</p>
+                <p>✔ 1 Full Model Per Day</p>
+            </div>
+
+            <button class="btn-buy">GET STARTED</button>
+        </div>
+
+        <!-- PRO PLAN -->
+        <div class="plan-box">
+            <div class="plan-title">RM PRO</div>
+            <div class="price">$19.99</div>
+
+            <div class="features">
+                <p>✔ Access to ALL GPT Models</p>
+                <p>✔ Unlimited Text Generation</p>
+                <p>✔ 10 3D Models Per Day</p>
+                <p>✔ Priority Access</p>
+            </div>
+
+            <button class="btn-buy">UPGRADE</button>
+        </div>
+
+        <!-- PRO MAX PLAN -->
+        <div class="plan-box">
+            <div class="plan-title">RM PRO MAX</div>
+            <div class="price">$29.99</div>
+
+            <div class="features">
+                <p>✔ Full Access to Every Feature</p>
+                <p>✔ Unlimited 3D Models</p>
+                <p>✔ Fastest Model Rendering</p>
+                <p>✔ Early Access to New AI Tools</p>
+            </div>
+
+            <button class="btn-buy">GO PRO MAX</button>
+        </div>
+
+    </div>
+
+</body>
+</html>
